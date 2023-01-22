@@ -126,9 +126,11 @@ if(ICDUMP_LLVM_SUPPORT)
   )
 endif()
 
-target_link_libraries(LIB_ICDUMP PUBLIC
-  LIEF::LIEF
-)
+add_library(LIEF INTERFACE)
+add_library(iCDump::LIEF ALIAS LIEF)
+target_link_libraries(LIEF INTERFACE $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/lib/libLIEF${CMAKE_STATIC_LIBRARY_SUFFIX}>)
+
+target_link_libraries(LIB_ICDUMP PRIVATE $<BUILD_INTERFACE:LIEF::LIEF>)
 
 target_include_directories(LIB_ICDUMP
   PUBLIC
@@ -218,14 +220,30 @@ else()
     endif()
 endif()
 
+get_target_property(_LIEF_INC  LIEF::LIEF INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(_LIEF_CONF LIEF::LIEF IMPORTED_CONFIGURATIONS)
+get_target_property(_LIEF_LIB  LIEF::LIEF IMPORTED_LOCATION_${_LIEF_CONF})
+
+message(STATUS "LIEF Lib      : ${_LIEF_LIB}")
+message(STATUS "LIEF Includes : ${_LIEF_INC}")
 
 install(
-  TARGETS LIB_ICDUMP spdlog
+  TARGETS LIB_ICDUMP spdlog LIEF
   EXPORT iCDumpExport
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libraries
   INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(
+  FILES       ${_LIEF_LIB}
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  COMPONENT   libraries)
+
+install(
+  DIRECTORY   ${_LIEF_INC}/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  COMPONENT   headers)
 
 install(
   FILES ${CMAKE_CURRENT_BINARY_DIR}/iCDumpConfig.cmake
@@ -240,11 +258,11 @@ else()
 endif()
 
 install(
-  EXPORT iCDumpExport
-  NAMESPACE iCDump::
+  EXPORT      iCDumpExport
+  NAMESPACE   iCDump::
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/iCDump/cmake
-  FILE iCDumpExport-${lib_type}.cmake
-  COMPONENT config)
+  FILE        iCDumpExport-${lib_type}.cmake
+  COMPONENT   config)
 
 install(
   DIRECTORY
