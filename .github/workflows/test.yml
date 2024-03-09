@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       what:
-        description: 'clang-tidy action'
+        description: 'clang-tidy'
         default: latest
         required: false
         type: string
