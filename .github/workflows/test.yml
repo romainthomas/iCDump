@@ -9,7 +9,7 @@ on:
         type: string
   push:
     branches:
-      - create-circleci-config-forked
+      - create-circleci-config
 jobs:
   core:
     runs-on: ubuntu-latest
