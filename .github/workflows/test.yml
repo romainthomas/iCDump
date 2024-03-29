@@ -25,15 +25,17 @@ jobs:
         shell: bash
         env:
           REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+          WHAT: ${{ inputs.what }}
           S3_KEY: ${{ secrets.S3_KEY }}
           S3_SECRET: ${{ secrets.S3_SECRET }}
         run: |
-          docker run --rm \
-           -e S3_KEY=$S3_KEY \
-           -e S3_SECRET=$S3_SECRET \
+          docker run --rm                 \
+           -e S3_KEY=$S3_KEY              \
+           -e S3_SECRET=$S3_SECRET        \
+           -e BUCKET_KEY=$WHAT            \
            -v $GITHUB_WORKSPACE/src/:/src \
-           --workdir /home/extended \
-           --entrypoint /usr/bin/python3 \
+           --workdir /home/extended       \
+           --entrypoint /usr/bin/python3  \
            ${REGISTRY}/extended /src/.ci/gha/bootstrap
 
 
