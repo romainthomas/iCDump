@@ -2,6 +2,12 @@
 <img width="100%" src=".github/featured.webp"/><br />
 </p>
 
+<br />
+<br />
+<h1><b>iCDump is now part of <a href="https://lief.re/doc/latest/extended/intro.html">LIEF extended</a></b></h1>
+<br />
+<br />
+
 # iCDump
 
 iCDump is a modern and cross-platform Objective-C class dump.
